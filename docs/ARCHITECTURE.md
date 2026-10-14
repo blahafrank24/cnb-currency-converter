@@ -86,15 +86,17 @@ ESLint/Prettier (see plan; trade-off, not an oversight), `user-event` (RTL `fire
 | `staleTime` 1 hour, `retry` 1 | CNB publishes once per working day; no need to refetch on every focus | Compute the next publication time and refetch then |
 | Deploy to GitHub Pages with Actions | Code and hosting in one place, free, tests run before every deploy | Pages is static only: no rewrites, no server logic |
 | Relative `base: './'` | Works under `/<repo>/` without hard-coding the repo name | n/a |
-| Same-origin copy of `daily.txt` (only if CORS blocks CNB) | Pages cannot proxy, so the workflow fetches the file into the build on a daily schedule; no server code | Data can be up to a day old; an edge function would fix it at scale |
+| Same-origin copy of `daily.txt` fetched at deploy time (CORS blocks CNB) | Pages cannot proxy, so the deploy workflow fetches the file into `dist/`; no server code, no scheduled job to maintain | Rates are as old as the last deploy (refresh by pushing or the manual "Run workflow" button); the UI shows the CNB date and the sync time so staleness is visible. A `schedule:` trigger would give daily freshness; an edge function would give live data |
+| Show "Synced <time>" from a build-time constant | Honest about how old our copy is, with no extra file or request | One more value to display and test |
 | Pure `domain/` folder | Parsing and math are the real logic; test them without React | n/a |
 | Styled components with a single theme object | Brief requires them; theme object keeps colors/spacing in one place | Design tokens + dark mode later |
 | Everything on `main`, small commits | Brief asks for commits throughout; linear history is easy to read | Team repos use PRs and CI |
 
 CORS outcome of the Step 0 spike (2026-10-13): **blocked.** `daily.txt` sends a fixed `Access-Control-Allow-Origin: apl.cnb.cz`
 (not `*`, no scheme, never echoes the caller's `Origin`, no `Vary`), and the `OPTIONS` preflight returns an HTML page without CORS headers.
-Browsers reject it from any other origin. Fix: Step 9, the deploy workflow downloads `daily.txt` into `dist/` on a daily schedule
-so the app fetches it same-origin; dev uses a Vite proxy. No third-party CORS proxy.
+Browsers reject it from any other origin. Fix: Step 9, the deploy workflow downloads `daily.txt` into `dist/` on every deploy
+so the app fetches it same-origin; dev uses a Vite proxy (added in Step 4). No third-party CORS proxy and no scheduled run (less to maintain).
+Known limit: the brief says "latest rates", but our copy is only as fresh as the last deploy; the UI shows the CNB date and the sync time.
 
 ## Error and edge cases handled
 - Network failure or non-2xx: error message + "Try again" button (`refetch`).
