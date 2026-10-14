@@ -38,6 +38,7 @@ Australia|dollar|1|AUD|15.212
     │   ├── types.ts          Rate, RatesSnapshot
     │   ├── parseRates.ts     text to RatesSnapshot
     │   ├── convert.ts        CZK to foreign amount
+    │   ├── parseAmount.ts    typed text ("1 500,50") to number or null
     │   └── *.test.ts         unit tests
     ├── hooks/
     │   └── useRates.ts       useQuery wrapper that fetches and parses
@@ -108,7 +109,8 @@ Known limit: the brief says "latest rates", but our copy is only as fresh as the
 
 ## Tests (what and why)
 - `parseRates.test.ts`: real sample, header handling, `Amount` of 100, blank lines, bad rows. *The most valuable tests: this is where bugs hide.*
-- `convert.test.ts`: normal rate, JPY-style `Amount` 100, zero, rounding.
+- `convert.test.ts`: normal rate, JPY-style `Amount` 100, zero, no rounding.
+- `parseAmount.test.ts`: decimal comma and dot, space and non-breaking-space thousands separators, ambiguous or invalid input rejected.
 - `App.test.tsx`: stubbed `fetch`; renders the list and date, typing an amount shows the right converted value,
   failed fetch shows the error and retry works.
 - Not tested on purpose: styling, the QueryClient itself, the browser.
