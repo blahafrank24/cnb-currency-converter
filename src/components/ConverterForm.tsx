@@ -1,7 +1,44 @@
 import { useState } from 'react'
+import styled from 'styled-components'
 import { useRates } from '../hooks/useRates'
 import { convertFromCzk } from '../domain/convert'
 import { parseAmount } from '../domain/parseAmount'
+import { theme } from '../styles/theme'
+
+const Card = styled.form`
+  display: grid;
+  gap: ${theme.space(4)};
+  padding: ${theme.space(5)};
+  background: ${theme.color.surface};
+  border: 1px solid ${theme.color.border};
+  border-radius: ${theme.radius};
+`
+
+const Field = styled.label`
+  display: grid;
+  gap: ${theme.space(1)};
+  font-weight: 600;
+
+  input,
+  select {
+    width: 100%;
+    padding: ${theme.space(3)};
+    font: inherit;
+    font-weight: 400;
+    color: inherit;
+    background: ${theme.color.surface};
+    border: 1px solid ${theme.color.border};
+    border-radius: ${theme.radius};
+  }
+`
+
+const Result = styled.p`
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+`
 
 const inputFormat = new Intl.NumberFormat('en', { maximumFractionDigits: 20 })
 const resultFormat = new Intl.NumberFormat('en', {
@@ -27,8 +64,8 @@ export function ConverterForm() {
       : 'Enter an amount in CZK greater than zero, for example 1 500,50.'
 
   return (
-    <form onSubmit={(event) => event.preventDefault()}>
-      <label>
+    <Card onSubmit={(event) => event.preventDefault()}>
+      <Field>
         Amount in CZK
         <input
           type="text"
@@ -37,8 +74,8 @@ export function ConverterForm() {
           value={amountText}
           onChange={(event) => setAmountText(event.target.value)}
         />
-      </label>
-      <label>
+      </Field>
+      <Field>
         Convert to
         <select value={rate.code} onChange={(event) => setCode(event.target.value)}>
           {data.rates.map((r) => (
@@ -47,8 +84,8 @@ export function ConverterForm() {
             </option>
           ))}
         </select>
-      </label>
-      <p aria-live="polite">{result}</p>
-    </form>
+      </Field>
+      <Result aria-live="polite">{result}</Result>
+    </Card>
   )
 }

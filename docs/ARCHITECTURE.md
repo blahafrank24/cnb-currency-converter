@@ -91,7 +91,7 @@ ESLint/Prettier (see plan; trade-off, not an oversight), `user-event` (RTL `fire
 | Same-origin copy of `daily.txt` fetched at deploy time (CORS blocks CNB) | Pages cannot proxy, so the deploy workflow fetches the file into `dist/`; no server code, no scheduled job to maintain | Rates are as old as the last deploy (refresh by pushing or the manual "Run workflow" button); the UI shows the CNB date and the sync time so staleness is visible. A `schedule:` trigger would give daily freshness; an edge function would give live data |
 | Show "Synced <time>" from a build-time constant | Honest about how old our copy is, with no extra file or request | One more value to display and test |
 | Pure `domain/` folder | Parsing and math are the real logic; test them without React | n/a |
-| Styled components with a single theme object | Brief requires them; theme object keeps colors/spacing in one place | Design tokens + dark mode later |
+| Styled components with a single theme object, imported directly (no `ThemeProvider`) | Brief requires them; one plain object keeps colors/spacing in one place, and skipping the provider avoids a `DefaultTheme` type declaration file | `ThemeProvider` is needed for runtime theme switching, for example dark mode |
 | Everything on `main`, small commits | Brief asks for commits throughout; linear history is easy to read | Team repos use PRs and CI |
 
 CORS outcome of the Step 0 spike (2026-10-13): **blocked.** `daily.txt` sends a fixed `Access-Control-Allow-Origin: apl.cnb.cz`
