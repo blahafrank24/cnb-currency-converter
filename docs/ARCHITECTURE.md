@@ -83,6 +83,7 @@ ESLint/Prettier (see plan; trade-off, not an oversight), `user-event` (RTL `fire
 | Result derived in render | One source of truth; nothing to keep in sync | If conversion were expensive, `useMemo` |
 | Accept `1500,50` and `1 500.50` input | Czech users type decimal commas; one small normalise function | Use `Intl`-based parsing for many locales |
 | Plain `number` for money | Display-only conversion, rounded to 2 decimals via `Intl.NumberFormat` | For real money use integer minor units or a decimal library |
+| Parse inside the `queryFn`, not in `select` | The cache holds the typed `RatesSnapshot`, so every consumer gets typed data from one place | **Known downside:** a malformed file throws inside the query, so React Query retries it once like a network error. The retry cannot succeed (same file, same result), so the error state appears a second or two later than necessary. Accepted for simplicity; a custom error class plus a `retry` function would skip it |
 | `staleTime` 1 hour, `retry` 1 | CNB publishes once per working day; no need to refetch on every focus | Compute the next publication time and refetch then |
 | Deploy to GitHub Pages with Actions | Code and hosting in one place, free, tests run before every deploy | Pages is static only: no rewrites, no server logic |
 | Relative `base: './'` | Works under `/<repo>/` without hard-coding the repo name | n/a |
