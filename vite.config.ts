@@ -4,6 +4,7 @@ import { defineConfig } from 'vitest/config'
 export default defineConfig({
   plugins: [react()],
   base: './',
+  test: { environment: 'jsdom' },
   server: {
     // Dev only: the browser asks Vite (same origin) and Vite asks CNB, which avoids CORS.
     proxy: {

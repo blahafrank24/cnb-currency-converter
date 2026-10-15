@@ -75,7 +75,7 @@ CNB daily.txt --fetchRates (string)--> useRates (React Query cache)
 
 Deliberately **not** used: UI kit, form library, `react-hook-form`, Redux/Zustand, router, date library
 (the date is shown as the text CNB gives, parsed once), `axios` (`fetch` is enough), `msw` (stubbing `fetch` is enough),
-ESLint/Prettier (see plan; trade-off, not an oversight), `user-event` (RTL `fireEvent` covers our two interactions).
+ESLint/Prettier (see plan; trade-off, not an oversight), `user-event` (RTL `fireEvent` covers our three interactions: typing, selecting, the retry click; revisit if we add key handlers or debouncing).
 
 ## Key decisions
 | Decision | Reasoning | Trade-off / what I would change at scale |
