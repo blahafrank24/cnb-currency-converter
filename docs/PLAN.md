@@ -45,8 +45,8 @@ Write the outcome in the ARCHITECTURE decisions table.
 11. `Write README` — what, how to run, live link (`https://<user>.github.io/cnb-currency-converter/`), decisions summary, "what I would do next".
 
 ## Definition of done
-- [ ] Every point of the brief is visibly met (checklist in README).
-- [ ] `npm run check` and `npm run build` pass from a clean clone.
-- [ ] Live URL works on desktop and phone width, and shows the data date.
-- [ ] `main` history is linear, reads like this plan, and every commit was approved by Frank.
-- [ ] Frank understands every file and dependency: Claude explained each step in detail and `private/UNDERSTANDING.md` is up to date.
+- [x] Every point of the brief is visibly met (checklist in README).
+- [x] `npm run check` and `npm run build` pass from a clean clone.
+- [x] Live URL works on desktop and phone width, and shows the data date.
+- [x] `main` history is linear, reads like this plan, and every commit was approved by Frank.
+- [x] Frank understands every file and dependency: Claude explained each step in detail and `private/UNDERSTANDING.md` is up to date.

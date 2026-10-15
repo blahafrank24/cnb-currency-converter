@@ -26,13 +26,14 @@ Australia|dollar|1|AUD|15.212
 ├── index.html                Vite entry
 ├── package.json              4 runtime deps, scripts
 ├── tsconfig.json             strict
-├── vite.config.ts            React plugin, relative base, Vitest config
+├── vite.config.ts            React plugin, relative base, dev proxy, build-time constant, Vitest (jsdom) config
 ├── .github/workflows/
 │   └── deploy.yml            test, build and publish to GitHub Pages on push to main
 └── src/
     ├── main.tsx              mounts App inside QueryClientProvider
     ├── globals.d.ts          types the build-time constant `__BUILD_TIME__`
     ├── App.tsx               layout and composition only
+    ├── App.test.tsx          app-level tests with a stubbed fetch
     ├── api/
     │   └── fetchRates.ts     fetch text from the endpoint, throw on non-2xx
     ├── domain/               pure functions, no React, no I/O
@@ -45,8 +46,7 @@ Australia|dollar|1|AUD|15.212
     │   └── useRates.ts       useQuery wrapper that fetches and parses
     ├── components/
     │   ├── RatesTable.tsx    list of rates + date + loading/error states
-    │   ├── ConverterForm.tsx amount input, currency select, live result
-    │   └── *.test.tsx        component tests (stubbed fetch)
+    │   └── ConverterForm.tsx amount input, currency select, live result
     └── styles/
         ├── theme.ts          colors, spacing, radii as one object
         └── GlobalStyle.ts    createGlobalStyle: box-sizing, font, body
@@ -72,7 +72,7 @@ CNB daily.txt --fetchRates (string)--> useRates (React Query cache)
 | `@tanstack/react-query` | Required by the brief | Gives caching, loading/error states, retry and refetch for free; a hand-written `useEffect` fetch would be more code and more bugs |
 | `vite` + `@vitejs/plugin-react` (dev) | Fast dev server and build with the least config; Next.js is forbidden | CRA is deprecated; webpack is heavier to explain |
 | `typescript` (dev) | Required by the brief | strict mode doubles as our "linter" |
-| `vitest`, `jsdom`, `@testing-library/react` (dev) | Tests run in the same Vite config, no Babel/Jest setup; RTL tests behaviour (what the user sees) | Jest needs extra transform config; Cypress/Playwright is overkill here |
+| `vitest`, `jsdom`, `@testing-library/react`, `@testing-library/dom` (dev) | Tests run in the same Vite config, no Babel/Jest setup; RTL tests behaviour (what the user sees) | Jest needs extra transform config; Cypress/Playwright is overkill here |
 
 Deliberately **not** used: UI kit, form library, `react-hook-form`, Redux/Zustand, router, date library
 (the date is shown as the text CNB gives, parsed once), `axios` (`fetch` is enough), `msw` (stubbing `fetch` is enough),
@@ -112,6 +112,6 @@ Known limit: the brief says "latest rates", but our copy is only as fresh as the
 - `parseRates.test.ts`: real sample, header handling, `Amount` of 100, blank lines, bad rows. *The most valuable tests: this is where bugs hide.*
 - `convert.test.ts`: normal rate, JPY-style `Amount` 100, zero, no rounding.
 - `parseAmount.test.ts`: decimal comma and dot, space and non-breaking-space thousands separators, ambiguous or invalid input rejected.
-- `App.test.tsx`: stubbed `fetch`; renders the list and date, typing an amount shows the right converted value,
+- `App.test.tsx`: stubbed `fetch`; renders the list, the date and the "Synced" time, typing an amount shows the right converted value,
   failed fetch shows the error and retry works.
 - Not tested on purpose: styling, the QueryClient itself, the browser.
