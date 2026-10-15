@@ -37,30 +37,37 @@ const RetryButton = styled.button`
   }
 `
 
-const Synced = styled.span`
-  display: block;
-  font-size: 0.875rem;
-  font-weight: 400;
-  color: ${theme.color.muted};
+const Card = styled.section`
+  background: ${theme.color.surface};
+  border: 1px solid ${theme.color.border};
+  border-radius: ${theme.radius};
+  overflow: hidden;
+`
+
+// The heading sits outside the scrolling box, so on a phone the date stays visible while the table scrolls.
+const Header = styled.div`
+  padding: ${theme.space(3)} ${theme.space(4)};
+
+  h2 {
+    margin: 0;
+    font-size: 1rem;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: ${theme.color.muted};
+  }
 `
 
 const Scroll = styled.div`
   overflow-x: auto;
-  background: ${theme.color.surface};
-  border: 1px solid ${theme.color.border};
-  border-radius: ${theme.radius};
 `
 
 const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
   font-variant-numeric: tabular-nums;
-
-  caption {
-    padding: ${theme.space(3)} ${theme.space(4)};
-    text-align: left;
-    font-weight: 600;
-  }
 
   th,
   td {
@@ -106,33 +113,35 @@ export function RatesTable() {
   }
 
   return (
-    <Scroll>
-      <Table>
-        <caption>
-          Czech National Bank exchange rates, {data.date}
-          <Synced>Synced {syncedFormat.format(new Date(__BUILD_TIME__))}</Synced>
-        </caption>
-        <thead>
-          <tr>
-            <th scope="col">Country</th>
-            <th scope="col">Currency</th>
-            <th scope="col">Amount</th>
-            <th scope="col">Code</th>
-            <th scope="col">Rate (CZK)</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.rates.map((rate) => (
-            <tr key={rate.code}>
-              <th scope="row">{rate.country}</th>
-              <td>{rate.currency}</td>
-              <td>{rate.amount}</td>
-              <td>{rate.code}</td>
-              <td>{rateFormat.format(rate.rate)}</td>
+    <Card>
+      <Header>
+        <h2 id="rates-heading">Czech National Bank exchange rates, {data.date}</h2>
+        <p>Synced {syncedFormat.format(new Date(__BUILD_TIME__))}</p>
+      </Header>
+      <Scroll>
+        <Table aria-labelledby="rates-heading">
+          <thead>
+            <tr>
+              <th scope="col">Country</th>
+              <th scope="col">Currency</th>
+              <th scope="col">Amount</th>
+              <th scope="col">Code</th>
+              <th scope="col">Rate (CZK)</th>
             </tr>
-          ))}
-        </tbody>
-      </Table>
-    </Scroll>
+          </thead>
+          <tbody>
+            {data.rates.map((rate) => (
+              <tr key={rate.code}>
+                <th scope="row">{rate.country}</th>
+                <td>{rate.currency}</td>
+                <td>{rate.amount}</td>
+                <td>{rate.code}</td>
+                <td>{rateFormat.format(rate.rate)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </Scroll>
+    </Card>
   )
 }
