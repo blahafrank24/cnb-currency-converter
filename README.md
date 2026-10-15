@@ -42,6 +42,15 @@ npm run build    # production build into dist/
 
 The scope and the order the project was built in are in [docs/PLAN.md](docs/PLAN.md).
 
+## How this was built
+
+Built with [Claude Code](https://claude.com/claude-code), following the brief and rules in [CLAUDE.md](CLAUDE.md); the commits carry a `Co-Authored-By` line.
+
+- **Decisions are mine:** the stack and dependencies, hosting, how to get around the CORS block, skipping ESLint, and what stays out of scope. Each is recorded with its trade-off in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+- **Every commit was approved before it was made and pushed**, one at a time, with the diff and message shown first. History is linear on `main`.
+- **Checked by:** strict TypeScript, the tests, the CI run before every deploy, and looking at the live site.
+- The step-by-step account, including what the AI got wrong and what was not checked, is in [AI-LOG.md](AI-LOG.md).
+
 ## What I would do next
 
 - Get truly live rates: a small Cloudflare Worker (about 10 lines) that fetches CNB's `daily.txt` and adds `Access-Control-Allow-Origin: *`, with the app calling it directly. CNB's other endpoints, including its JSON API, also send no usable CORS header, so some middleman is needed. This would remove the deploy-time copy, the dev proxy and the "Synced" label, at the cost of one extra service and backend code.
