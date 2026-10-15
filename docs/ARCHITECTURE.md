@@ -31,6 +31,7 @@ Australia|dollar|1|AUD|15.212
 │   └── deploy.yml            test, build and publish to GitHub Pages on push to main
 └── src/
     ├── main.tsx              mounts App inside QueryClientProvider
+    ├── globals.d.ts          types the build-time constant `__BUILD_TIME__`
     ├── App.tsx               layout and composition only
     ├── api/
     │   └── fetchRates.ts     fetch text from the endpoint, throw on non-2xx
@@ -96,8 +97,8 @@ ESLint/Prettier (see plan; trade-off, not an oversight), `user-event` (RTL `fire
 
 CORS outcome of the Step 0 spike (2026-10-13): **blocked.** `daily.txt` sends a fixed `Access-Control-Allow-Origin: apl.cnb.cz`
 (not `*`, no scheme, never echoes the caller's `Origin`, no `Vary`), and the `OPTIONS` preflight returns an HTML page without CORS headers.
-Browsers reject it from any other origin. Fix: Step 9, the deploy workflow downloads `daily.txt` into `dist/` on every deploy
-so the app fetches it same-origin; dev uses a Vite proxy (added in Step 4). No third-party CORS proxy and no scheduled run (less to maintain).
+Browsers reject it from any other origin. Fix: Step 10, the deploy workflow downloads `daily.txt` into `dist/` on every deploy
+so the app fetches it same-origin; dev uses a Vite proxy (added in Step 4); Step 9 adds the "Synced" time. No third-party CORS proxy and no scheduled run (less to maintain).
 Known limit: the brief says "latest rates", but our copy is only as fresh as the last deploy; the UI shows the CNB date and the sync time.
 
 ## Error and edge cases handled

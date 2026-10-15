@@ -3,6 +3,7 @@ import { useRates } from '../hooks/useRates'
 import { theme } from '../styles/theme'
 
 const rateFormat = new Intl.NumberFormat('en', { minimumFractionDigits: 3 })
+const syncedFormat = new Intl.DateTimeFormat('en', { dateStyle: 'medium', timeStyle: 'short' })
 
 const Status = styled.p`
   margin: 0;
@@ -34,6 +35,13 @@ const RetryButton = styled.button`
     opacity: 0.6;
     cursor: progress;
   }
+`
+
+const Synced = styled.span`
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: ${theme.color.muted};
 `
 
 const Scroll = styled.div`
@@ -100,7 +108,10 @@ export function RatesTable() {
   return (
     <Scroll>
       <Table>
-        <caption>Czech National Bank exchange rates, {data.date}</caption>
+        <caption>
+          Czech National Bank exchange rates, {data.date}
+          <Synced>Synced {syncedFormat.format(new Date(__BUILD_TIME__))}</Synced>
+        </caption>
         <thead>
           <tr>
             <th scope="col">Country</th>

@@ -34,6 +34,7 @@ describe('App', () => {
 
     expect(screen.getByRole('status').textContent).toMatch(/loading/i)
     expect(await screen.findByText(/13 Oct 2026/)).toBeTruthy()
+    expect(screen.getByText(/^Synced /)).toBeTruthy()
     expect(screen.getByRole('cell', { name: 'JPY' })).toBeTruthy()
     expect(screen.getByRole('cell', { name: '21.788' })).toBeTruthy()
   })

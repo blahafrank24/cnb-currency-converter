@@ -26,22 +26,22 @@ The CNB endpoint may not send CORS headers, which would make a browser `fetch` f
 In a browser console on any other origin run `fetch(url)` and read the result.
 - If it works: call CNB directly, no extra moving parts.
 - If it is blocked: GitHub Pages is static, so it cannot rewrite or proxy requests. The lean fallback is to let the
-  deploy workflow download `daily.txt` into the build (same origin, no server code). Step 9 below.
+  deploy workflow download `daily.txt` into the build (same origin, no server code). Steps 9 and 10 below.
   We decide together after the spike; I would not use a public third-party CORS proxy.
 Write the outcome in the ARCHITECTURE decisions table.
-**Outcome (2026-10-13): blocked.** We go with the deploy-time copy and no scheduled run (see Step 9 and ARCHITECTURE).
+**Outcome (2026-10-13): blocked.** We go with the deploy-time copy and no scheduled run (see Steps 9, 10 and ARCHITECTURE).
 
 ## Steps (one commit each, all on `main`, each approved by Frank before it is committed and pushed)
 1. `Initialize Vite React TypeScript project` — scaffold, strict tsconfig, remove template demo files, `.gitignore` (includes `private/`), scripts, add `CLAUDE.md` and `docs/`.
 2. `Add CNB daily.txt parser with tests` — `src/domain/parseRates.ts`: text to `{ date, rates[] }`; tests for the real sample, blank lines, bad rows, `Amount` of 100.
 3. `Add CZK conversion with tests` — `src/domain/convert.ts`: CZK to foreign = `czk * rate.amount / rate.rate`; tests incl. JPY (amount 100), zero, rounding.
-4. `Fetch rates with React Query` — `src/api/fetchRates.ts`, `src/hooks/useRates.ts`, `QueryClientProvider` in `main.tsx`; `staleTime` 1 hour, `retry` 1. `fetchRates` requests the same-origin `daily.txt`; `vite.config.ts` gets a dev-server proxy for `/daily.txt` to CNB (about 6 lines) so Steps 4 to 8 work in `npm run dev`. The proxy is dev-only; production gets the file in Step 9.
+4. `Fetch rates with React Query` — `src/api/fetchRates.ts`, `src/hooks/useRates.ts`, `QueryClientProvider` in `main.tsx`; `staleTime` 1 hour, `retry` 1. `fetchRates` requests the same-origin `daily.txt`; `vite.config.ts` gets a dev-server proxy for `/daily.txt` to CNB (about 6 lines) so Steps 4 to 8 work in `npm run dev`. The proxy is dev-only; production gets the file in Step 10.
 5. `Show rates table` — `RatesTable` with date header, loading and error (with retry) states.
 6. `Add converter form` — `ConverterForm`: CZK input (accepts `1 500,50`), currency select, live result in `aria-live`.
 7. `Style the app with styled-components` — theme object, `GlobalStyle`, responsive single column, focus styles, tabular numbers.
 8. `Add component tests` — App-level tests with a stubbed `fetch`: renders list, converts, shows error.
-9. `Serve CNB rates from the deploy` (CORS is blocked, so this step is required) — workflow step fetches `daily.txt` into `dist/` on every deploy (`curl -f`, so a CNB outage fails the job and the previous deploy stays live); the dev proxy already exists from Step 4. The build time is injected as a constant and the UI shows "Synced <time>" next to the CNB date. No scheduled run: rates are as fresh as the last deploy, documented in the README. A `schedule:` line can be added later without touching app code.
-10. `Add GitHub Pages deploy workflow` — `.github/workflows/deploy.yml` (checkout, setup-node, `npm ci`, `npm run check`, build, upload-pages-artifact, deploy-pages) and `base: './'` in `vite.config.ts`. Triggers: push to `main` and manual `workflow_dispatch` (a "Run workflow" button to refresh the rates). Frank enables Pages (Source: GitHub Actions).
+9. `Show when the rates were synced` (CORS is blocked, so the app needs a same-origin copy; the copy itself is made in Step 10) — the build time is injected as a constant (`__BUILD_TIME__` via Vite `define`) and the UI shows "Synced <time>" next to the CNB date. The dev proxy already exists from Step 4. No scheduled run: rates are as fresh as the last deploy, documented in the README. A `schedule:` line can be added later without touching app code.
+10. `Add GitHub Pages deploy workflow` — `.github/workflows/deploy.yml` (checkout, setup-node, `npm ci`, `npm run check`, build, then `curl -f` of `daily.txt` into `dist/` so a CNB outage fails the job and the previous deploy stays live, upload-pages-artifact, deploy-pages) and `base: './'` in `vite.config.ts`. Triggers: push to `main` and manual `workflow_dispatch` (a "Run workflow" button to refresh the rates). Frank enables Pages (Source: GitHub Actions).
 11. `Write README` — what, how to run, live link (`https://<user>.github.io/cnb-currency-converter/`), decisions summary, "what I would do next".
 
 ## Definition of done
