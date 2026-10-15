@@ -44,7 +44,8 @@ The scope and the order the project was built in are in [docs/PLAN.md](docs/PLAN
 
 ## What I would do next
 
-- Refresh the rates daily with a `schedule:` trigger, or an edge function for live data.
+- Get truly live rates: a small Cloudflare Worker (about 10 lines) that fetches CNB's `daily.txt` and adds `Access-Control-Allow-Origin: *`, with the app calling it directly. CNB's other endpoints, including its JSON API, also send no usable CORS header, so some middleman is needed. This would remove the deploy-time copy, the dev proxy and the "Synced" label, at the cost of one extra service and backend code.
+- Short of that, refresh the copy automatically with a `schedule:` trigger on the deploy workflow (for example every 30 minutes on weekday afternoons).
 - ESLint in a team repo (strict TypeScript and tests were enough at this size).
 - Skip React Query's retry when the file is malformed, because the retry cannot succeed.
 - `user-event` for tests if the form gets key handling or debouncing.
